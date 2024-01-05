@@ -1,0 +1,42 @@
+
+<section>
+  <div class="container ubuntuMono">
+      <h4 class="noselect ubuntuMono"><!--Place title here!!!--> - Log in</h4>
+      <input id="usernamebox" name="username" placeholder="B0b5m1th" required>
+      <label for="username" class="noselect">Username</label>
+      <input type="password" class="form-control" id="passwordbox" name="password" placeholder="Password" value="" required>
+      <label for="password" class="noselect">Password</label>
+
+      <button onclick="submit()">Log in</button>
+
+    </div>
+  </div>
+</section>
+
+<script>
+//let socket = io()
+usernamebox = document.getElementById('usernamebox')
+passwordbox = document.getElementById('passwordbox')
+
+function submit(){
+  authLogin(usernamebox.value, passwordbox.value)
+}
+
+
+// function submit() {
+//   time = (new Date().getTime())
+
+//   hashpacket = usernamebox.value+sha256(passwordbox.value).toUpperCase()+time
+
+//   packet = {
+//     data: sha256(hashpacket),
+//     time: time
+//   }
+//   socket.emit('authreq', JSON.stringify(packet))
+//   //alert(sha256(passwordbox.value))
+//   //passwordbox.value = sha256(passwordbox.value)
+// }
+
+
+
+</script>
