@@ -64,7 +64,7 @@ export function iconauth() {
 
 // }
 
-function addPopup(bgcolor, isDark, title, content) {
+export function addPopup(bgcolor, isDark, title, content) {
   const elem = document.getElementById('popupBox')
   let header
   let textColor
@@ -104,6 +104,7 @@ export function popupWarning(title, text){
 export function popupError(title, text){
   addPopup('#500000', true, title, text)
 }
+
 
 export function getUnixTime() {
   return (+ new Date())

@@ -1,10 +1,14 @@
 from modules.main import test as test
 
-def test1(ac, data):
-  print(ac)
-  print(data)
+mm = None
 
-def main(mm):
-  # mm.addAuthEventListener('test1', test1)
-  print(mm.rawServer.addEventListener('test1', test1))
-  #mm.rawServer.addEventListener('login', test1)
+def test1(ac, data):
+  mm.sendPopupColor(ac.rawClient, 'test!', 'test!', '#600060', True)
+
+def init(moduleMaster):
+  global mm
+  mm = moduleMaster
+  mm.addAuthEventListener('test1', test1)
+
+def main():
+  pass

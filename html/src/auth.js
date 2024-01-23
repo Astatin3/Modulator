@@ -26,12 +26,12 @@ export function authClient(rawClient) {
   }
 
   this.clidata = (data)=>{
-    // const session = utils.getCookie('session')
-    // if(session != ''){
-    //   this.rawClient.send('reauth', {
-    //     session: session
-    //   })
-    // }
+    const session = utils.getCookie('session')
+    if(session != ''){
+      this.rawClient.send('reauth', {
+        session: session
+      })
+    }
   }
 
   this.loginSuccess = (data)=>{
@@ -45,7 +45,9 @@ export function authClient(rawClient) {
   }
 
   this.reauth = (data)=>{
-    utils.popupSuccess('Connection', 'Successfully logged in!')
+    if(window.location.pathname == "/login"){
+      utils.popupSuccess('Connection', 'Successfully logged in!')
+    }
     utils.iconauth()
   }
 

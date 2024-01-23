@@ -202,6 +202,7 @@ li::marker {
 
     width: var(--popupBoxWidth);
     height: calc(100% - var(--topnavheight) - 10px);
+    pointer-events:none;
     bottom: 0;
     right: 20px;
     overflow: auto;
@@ -223,6 +224,8 @@ li::marker {
     min-height: inherit;
     padding: 0;
     background-color: inherit;
+
+    pointer-events:all;
 
     left: 0;
     margin: 0;

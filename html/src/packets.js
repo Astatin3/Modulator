@@ -11,6 +11,7 @@ function getErrorDesc(error){
     case 'invalidLogin':
       return 'Invalid username or password'
     case 'invalidLoginRequest':
+      utils.setCookie('session', '')
       return 'Some part of the login request is invalid, please try again'
     case 'prelogin':
       return 'You are already logged in'

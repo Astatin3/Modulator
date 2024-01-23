@@ -6,6 +6,7 @@ from sys import argv
 webserv = web.webserv()
 moduleMaster = modules.moduleMaster()
 
+
 def main():
 
   if not utils.pathExists('data'):
@@ -24,8 +25,9 @@ def main():
       if not utils.pathExists('data/selfsign.crt'):
         utils.genCert(utils.getRoot('data/'))
 
+  moduleMaster.addModules(webserv)
+  webserv.init()
   moduleMaster.initModules(webserv)
-
   webserv.start()
   moduleMaster.runModules()
 

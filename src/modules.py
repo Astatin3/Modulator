@@ -12,25 +12,30 @@ class module():
     self.rootdir = None
     self.tabs = []
 
-  def initSelf(self):
+  def add(self):
     spec = importlib.util.spec_from_file_location(self.name, utils.getRoot(self.entrypoint))
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     self.module = module
-  
-  def run(self, moduleMaster):
-    self.module.main(moduleMaster)
+
+  def init(self, moduleMaster):
+    self.module.init(moduleMaster)  
+
+  def run(self):
+    self.module.main()
+
 
 class moduleMaster():
   def __init__(self):
     self.modules = []
+
     self.webserv = None
-    
     self.app = None
     self.rawServer = None
     self.authServer = None
+    # self.addRawEventListener('test1', test1)
 
-  def initModules(self, webserv):
+  def addModules(self, webserv):
     self.webserv = webserv
 
     mdirs = utils.listSubdirs(utils.getRoot('modules/'))
@@ -75,37 +80,93 @@ class moduleMaster():
 
         self.webserv.webtabs.append(mtab)
 
-      m.initSelf()
+      m.add()
       self.modules.append(m)
 
     for tab in webserv.webtabs:
       tab.addHtml()
 
-  def runModules(self):
-    self.app = self.webserv.app
-    self.rawServer = self.app.rawServer
-    self.authServer = self.app.authServer
+
+
+  def initModules(self, webserv):
+    self.webserv = webserv
+    self.app = webserv.app
+    self.rawServer = webserv.rawServer
+    self.authServer = webserv.authServer
 
     for module in self.modules:
-      module.run(self)
-  
+      module.init(self)
+
+  def runModules(self):
+    for module in self.modules:
+      module.run()
+
+
+
+
   def getRawClients(self):
     return self.rawServer.clients
-  
-  def addRawEventListener(self, eventName, func):
-    self.rawServer.addEventListener(eventName, func)
-  
+
   def getAuthClients(self):
     return self.authServer.clients
+
+  def addRawEventListener(self, eventName, func):
+    self.rawServer.eventListeners.append({
+      'type': eventName,
+      'func': func
+    })
   
   def addAuthEventListener(self, eventName, func):
-    def tmpfunc(self, c, data):
+    def tmpfunc(c, data):
       if not c in self.rawServer.clients:
         return
       ac = utils.getatribinarr(self.authServer.clients, 'rawClient', c)
       if ac == None:
         return
+      if not self.authServer.validAc(ac):
+        return
 
       func(ac, data)
 
     self.rawServer.addEventListener(eventName, tmpfunc)
+
+  def getRawClientByID(self, ID):
+    return utils.getatribinarr(self.rawServer.clients, 'clientid', ID)
+
+  def getAuthClientByID(self, ID):
+    c = utils.getatribinarr(self.rawServer.clients, 'clientid', ID)
+    if c == None:
+      return None
+    return utils.getatribinarr(self.authServer.clients, 'rawClient', c)
+
+  def sendPopupInfo(self, c, title, msg):
+    c.send('popupInfo', {
+      'title': title,
+      'msg': msg
+    })
+  
+  def sendPopupSuccess(self, c, title, msg):
+    c.send('popupSuccess', {
+      'title': title,
+      'msg': msg
+    })
+
+  def sendPopupWarning(self, c, title, msg):
+    c.send('popupWarning', {
+      'title': title,
+      'msg': msg
+    })
+
+  def sendPopupError(self, c, title, msg):
+    c.send('popupError', {
+      'title': title,
+      'msg': msg
+    })
+  
+  def sendPopupColor(self, c, title, msg, color, isDark):
+    c.send('popupColor', {
+      'title': title,
+      'msg': msg,
+      'color': color,
+      'isDark': isDark
+    })

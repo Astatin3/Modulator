@@ -21,4 +21,24 @@ window.authClient = client
 window.authLogin = client.login
 window.sendAuth = client.send
 window.sendRaw = rawClient.send
-window.addRawTypeListener = rawClient.addRawTypeListener
+window.addListener = rawClient.addRawTypeListener
+
+window.addListener('popupInfo', (data)=>{
+  window.utils.popupInfo(data.data.title, data.data.msg)
+})
+
+window.addListener('popupSuccess', (data)=>{
+  window.utils.popupSuccess(data.data.title, data.data.msg)
+})
+
+window.addListener('popupWarning', (data)=>{
+  window.utils.popupWarning(data.data.title, data.data.msg)
+})
+
+window.addListener('popupError', (data)=>{
+  window.utils.popupError(data.data.title, data.data.msg)
+})
+
+window.addListener('popupColor', (data)=>{
+  window.utils.addPopup(data.data.color, data.data.isDark, data.data.title, data.data.msg)
+})

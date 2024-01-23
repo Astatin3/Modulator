@@ -29,11 +29,17 @@ class authClient:
     self.rawClient.send(type, data)
 
 class authServer:
-  def __init__(self):
+  def __init__(self, webserv):
     self.rawServer = None
     self.app = None
     self.clients = []
     self.users = []
+
+    self.webserv = webserv
+
+    self.reloadUsers()
+    self.rawServer = webserv.rawServer
+    self.initRawServer()
 
   def login(self, c, data):
     if c.clientid != data['cid']:
@@ -69,7 +75,7 @@ class authServer:
       c.send('loginSuccess', {
         'username': ac.username,
         'session': ac.session,
-        'redir': f'/{self.app.defaultTab}/{self.app.defaultPage}',
+        'redir': f'/{self.webserv.defaultTab}/{self.webserv.defaultPage}',
         'timeout': ac.timeout
       })
 
@@ -78,17 +84,22 @@ class authServer:
       c.send('error', 'invalidLogin')
       return
 
+  def validAc(self, ac):
+    if ac == None:
+      return False
+    if ac.rawClient.address != request.remote_addr:
+      return False
+    if utils.getUnixTime() > ac.timeout:
+      return False
+
+    return True
+
   def reauth(self, c, data):
     session = data['data']['session']
+
     ac = utils.getatribinarr(self.clients, 'session', session)
 
-    if ac == None:
-      c.send('error', 'invalidLoginRequest')
-      return
-    if ac.rawClient.address != request.remote_addr:
-      c.send('error', 'invalidLoginRequest')
-      return
-    if utils.getUnixTime() > ac.timeout:
+    if not self.validAc(ac):
       c.send('error', 'invalidLoginRequest')
       return
 
@@ -106,18 +117,12 @@ class authServer:
       
     ac = utils.getatribinarr(self.clients, 'session', session)
     
-    if ac == None:
-      return False
-    if ac.rawClient.address != request.remote_addr:
-      return False
-    if utils.getUnixTime() > ac.timeout:
-      return False
+    return self.validAc(ac)
 
-    return True
 
   def initRawServer(self):
-    self.app.rawServer.addEventListener('login', self.login)
-    self.app.rawServer.addEventListener('reauth', self.reauth)
+    self.rawServer.addEventListener('login', self.login)
+    self.rawServer.addEventListener('reauth', self.reauth)
 
   def reloadUsers(self):
     data = json.loads(utils.readFile(utils.getRoot('data/')+'creds.json'))
@@ -130,13 +135,3 @@ class authServer:
       user.sha256passwordhash = acc['sha256passwordhash']
       user.permGroups = acc['permGroups']
       self.users.append(user)
-
-def startAuthListener(app):
-  global authServer
-  authServer = authServer()
-  authServer.app = app
-  authServer.reloadUsers()
-  packets.startRawListener(app)
-  authServer.initRawServer()
-
-  return authServer
