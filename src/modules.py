@@ -1,6 +1,7 @@
 import json
 import importlib
 import sys
+import multiprocessing as mupr
 
 import src.web as web
 import src.utils as utils
@@ -9,6 +10,7 @@ class module():
   def __init__(self):
     self.name = None
     self.module = None
+    self.proc = None
     self.rootdir = None
     self.tabs = []
 
@@ -19,10 +21,15 @@ class module():
     self.module = module
 
   def init(self, moduleMaster):
-    self.module.init(moduleMaster)  
+    self.module.init(moduleMaster)
+    self.proc = mupr.Process(target=self.module.main)
 
   def run(self):
-    self.module.main()
+    self.proc.start()
+
+  def stop(self):
+    self.proc.stop()
+
 
 
 class moduleMaster():
@@ -33,6 +40,9 @@ class moduleMaster():
     self.app = None
     self.rawServer = None
     self.authServer = None
+    self.defaultPage = ""
+    self.vars = {}
+
     # self.addRawEventListener('test1', test1)
 
   def addModules(self, webserv):
@@ -67,6 +77,7 @@ class moduleMaster():
             else:
               mpage = web.webpage()
               mpage.name = obj['name']
+              mpage.requiredPermGroup = obj['requiredPermGroup']
               mpage.location = obj['location']
               tmpPages.append(mpage)
           return tmpPages
@@ -83,8 +94,8 @@ class moduleMaster():
       m.add()
       self.modules.append(m)
 
-    for tab in webserv.webtabs:
-      tab.addHtml()
+    # for tab in webserv.webtabs:
+    #   tab.compileHtml('User')
 
 
 
@@ -94,12 +105,19 @@ class moduleMaster():
     self.rawServer = webserv.rawServer
     self.authServer = webserv.authServer
 
+    self.defaultPage = f'/{webserv.defaultTab}/{webserv.defaultPage}'
+
     for module in self.modules:
       module.init(self)
 
   def runModules(self):
     for module in self.modules:
       module.run()
+
+  def runModules(self):
+    for module in self.modules:
+      module.run()
+
 
 
 
@@ -138,6 +156,25 @@ class moduleMaster():
     if c == None:
       return None
     return utils.getatribinarr(self.authServer.clients, 'rawClient', c)
+
+  def addPageEventListener(self, page, func):
+    self.authServer.pageListeners.append({
+      'page': page,
+      'func': func
+    })
+
+
+
+  def getVar(self, varName):
+    return self.vars[varname]
+
+  def setVar(self, varName, val):
+    self.vars[varName] = val
+
+
+  def unauth(self, ac):
+    self.authServer.unauth(ac)
+
 
   def sendPopupInfo(self, c, title, msg):
     c.send('popupInfo', {

@@ -18,14 +18,16 @@ class authClient:
   def __init__(self):
     self.username = None
     self.session = utils.randID(32)
-    self.userData = None
+    self.currentPage = "/login"
+    self.user = None
 
     self.timeout = utils.getUnixTime() + (60 * 60 * 1000)
     self.loginTime = utils.getUnixTime()
     self.lastReauth = utils.getUnixTime()
 
     self.rawClient = None
-  def send(type, data):
+    
+  def send(self, type, data):
     self.rawClient.send(type, data)
 
 class authServer:
@@ -36,6 +38,8 @@ class authServer:
     self.users = []
 
     self.webserv = webserv
+
+    self.pageListeners = []
 
     self.reloadUsers()
     self.rawServer = webserv.rawServer
@@ -67,13 +71,14 @@ class authServer:
 
       ac = authClient()
       ac.username = validAcc.username
-      ac.userData = validAcc
+      ac.user = validAcc
       ac.rawClient = c
 
       self.clients.append(ac)
 
       c.send('loginSuccess', {
         'username': ac.username,
+        'permGroups': ac.user.permGroups,
         'session': ac.session,
         'redir': f'/{self.webserv.defaultTab}/{self.webserv.defaultPage}',
         'timeout': ac.timeout
@@ -86,6 +91,8 @@ class authServer:
 
   def validAc(self, ac):
     if ac == None:
+      return False
+    if not (ac in self.clients):
       return False
     if ac.rawClient.address != request.remote_addr:
       return False
@@ -106,9 +113,15 @@ class authServer:
     ac.rawClient = c
     ac.lastReauth = utils.getUnixTime()
 
-    c.send('reauth', {
-      'username': ac.username
+    ac.send('reauth', {
+      'username': ac.username,
+      'permGroups': ac.user.permGroups,
+      'timeout': ac.timeout
     })
+
+    for pageListener in self.pageListeners:
+      if pageListener['page'] == ac.currentPage:
+        pageListener['func'](ac)
 
   def cookieLogin(self, request):
     session = request.cookies.get('session')
@@ -117,8 +130,37 @@ class authServer:
       
     ac = utils.getatribinarr(self.clients, 'session', session)
     
-    return self.validAc(ac)
+    if not self.validAc(ac):
+      return False
 
+    ac.currentPage = request.path
+
+    return True
+
+  def validPermGroup(self, group, request):
+    session = request.cookies.get('session')
+    if session == None:
+      return False, None
+
+    ac = utils.getatribinarr(self.clients, 'session', session)
+
+    if not self.validAc(ac):
+      return False, None
+    if (group != "") and not (group in ac.user.permGroups):
+      return False, None
+    return True, ac.user.permGroups
+  
+  # def validPermGroupfromSession(self, group, request):
+    
+    
+  # def logout(self, ac):
+  #   if not self.validAc(ac):
+  #     return False
+  #   self.clients.remove(ac)
+  #   return True
+
+  def unauth(self, ac):
+    self.clients.remove(ac)
 
   def initRawServer(self):
     self.rawServer.addEventListener('login', self.login)

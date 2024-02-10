@@ -1,0 +1,86 @@
+<main class="container">
+  <h3>User Settings</h3>
+  <p>Sessions</p>
+  <table role="grid">
+    <thead>
+      <tr>
+        <th scope="col">Username</th>
+        <th scope="col">Address</th>
+        <th scope="col">Path</th>
+        <th scope="col">Expires</th>
+        <th scope="col">Remove</th>
+      </tr>
+    </thead>
+    <tbody id="sessionTable"></tbody>
+  </table>
+  <button id="changePassword" onclick="changePassword()">Change Password</button>
+  <button id="logoutButton" onclick="promptLogout()">Logout</button>
+</main>
+<script>
+  function promptLogout() {
+    utils.confirmBox('var(--card-sectionning-background-color)', true, 'Are you sure you want to log out?', 'logout()', '')
+  }
+
+  function promptUnauth(clientid) {
+    utils.confirmBox('var(--card-sectionning-background-color)', true, 'Are you sure you want to log this session out?', `unauthClient('${clientid}')`, '')
+  }
+
+  function logout() {
+    window.sendRaw('logout', {})
+    utils.setCookie('session', '')
+  }
+
+  function unauthClient(id) {
+    window.sendRaw('unauth', id)
+  }
+
+  function changePassword() {
+    const elem = document.body
+    const bgcolor = 'var(--card-sectionning-background-color)'
+    const header = 'rgba(255,255,255,0.05)'
+    const textColor = 'text-white'
+    const title = "Change password"
+    
+    utils.modal(elem, 'document.body',bgcolor,  header, textColor, title, `
+    <input type="password" placeholder="Old Password"></input>
+    <input type="password" placeholder="New Password"></input>
+    <input type="password" placeholder="Retype new Password"></input>
+    <button>Submit</button>`)
+  }
+
+  window.main = ()=>{
+
+  const sessionTable = document.getElementById('sessionTable')
+
+  window.addListener("sessions", (data)=>{
+    sessions = data.data
+    let html = ""
+    for(let i=0;i<sessions.length;i++){
+      html += `
+        <tr>
+          <td>${sessions[i].username}</td>
+          <td>${sessions[i].address}</td>
+          <td>${sessions[i].currentPage}</td>
+          <td>${utils.formatTime(sessions[i].timeout)}</td>
+          <td><a href="#" onclick="promptUnauth('${sessions[i].clientid}')">Logout</a></td>
+        </tr>
+      `
+    }
+    sessionTable.innerHTML = html
+    
+  })
+  
+  }
+
+</script>
+<!-- 
+#################################################
+New Credentials - THESE ONLY WILL BE PRINTED ONCE
+########
+Username: User
+Password: 67FFCdfb9dB827fB
+########
+Username: Admin
+Password: eB0BB402900DfE5A
+#################################################
+-->

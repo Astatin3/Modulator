@@ -1,3 +1,5 @@
+export const getEl = (id)=>{return document.getElementById(id)}
+
 export const setCookie = (name, value, hours = 1, path = '/') => {
   const expires = new Date(Date.now() + hours * 6e4).toUTCString()
   document.cookie = `${name}=${encodeURIComponent(value)}; path=${path}; SameSite=None; secure=True; session=True`
@@ -64,6 +66,21 @@ export function iconauth() {
 
 // }
 
+export function modal(elem, identifier, bgcolor, header, textColor, title, innerHTML) {
+  elem.innerHTML += `
+  <dialog class="example ${textColor}" open>
+    <article style="background-color:${bgcolor};">
+      <header style="background-color:${header};">
+        <p class='noselect' style='font-size:10px;opacity:0.75'>${formatTime(getUnixTime())}</p>
+        <a class="close ${textColor}" onclick="${identifier}.removeChild(this.parentElement.parentElement.parentElement)"></a>
+        ${title}
+      </header>
+      ${innerHTML}
+    </article>
+  </dialog>
+  `
+}
+
 export function addPopup(bgcolor, isDark, title, content) {
   const elem = document.getElementById('popupBox')
   let header
@@ -75,18 +92,8 @@ export function addPopup(bgcolor, isDark, title, content) {
     header = 'rgba(0,0,0,0.2)'
     textColor = 'text-black'
   }
-  elem.innerHTML += `
-  <dialog class="example ${textColor}" open>
-    <article style="background-color:${bgcolor};">
-      <header style="background-color:${header};">
-        <p class='noselect' style='font-size:10px;opacity:0.75'>${formatTime(getUnixTime())}</p>
-        <a class="close ${textColor}" onclick="elem=document.getElementById('popupBox');elem.removeChild(this.parentElement.parentElement.parentElement)"></a>
-        ${title}
-      </header>
-      <p class='${textColor}'>${content}</p>
-    </article>
-  </dialog>
-  `
+  modal(elem, "document.getElementById('popupBox')", bgcolor, header, textColor, title, `<p class='${textColor}'>${content}</p>`)
+
 }
 
 export function popupInfo(title, text){
@@ -105,12 +112,27 @@ export function popupError(title, text){
   addPopup('#500000', true, title, text)
 }
 
+export function confirmBox(bgcolor, isDark, title, yesFunc, noFunc) {
+  const elem = document.body
+  let header
+  let textColor
+  if(isDark){
+    header = 'rgba(255,255,255,0.05)'
+    textColor = 'text-white'
+  }else{
+    header = 'rgba(0,0,0,0.2)'
+    textColor = 'text-black'
+  }
+  modal(elem, 'document.body', bgcolor,  header, textColor, title, `
+  <button class="outline half-left" onclick="document.body.removeChild(this.parentElement.parentElement);${yesFunc}">Yes</button>
+  <button class="half-right" onclick="document.body.removeChild(this.parentElement.parentElement);${noFunc}">No</button>`)
+}
 
 export function getUnixTime() {
   return (+ new Date())
 }
 
-function formatTime(Millis){
+export function formatTime(Millis){
   const date = new Date(Millis)
   
   if(date.getDate() != (new Date()).getDate()){

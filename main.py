@@ -16,13 +16,13 @@ def main():
     if input("No credentials file was found, \nwould you like to create one? (Y/n): ").lower() in ["yes", "y", ""]:
       utils.writeFile('data/creds.json', utils.genDefaultAccounts()) 
 
-  if webserv.secure and ( not utils.pathExists('data/selfsign.crt') or not utils.pathExists('data/selfsign.key') ):
+  if webserv.secure and ( not utils.pathExists('data/ssl.crt') or not utils.pathExists('data/ssl.key') ):
     if input("No ssl key/cert was found, \nwould you like to create them? (Y/n): ").lower() in ["yes", "y", ""]:
 
-      if not utils.pathExists('data/selfsign.key'):
+      if not utils.pathExists('data/ssl.key'):
         utils.genKey(utils.getRoot('data/'))
 
-      if not utils.pathExists('data/selfsign.crt'):
+      if not utils.pathExists('data/ssl.crt'):
         utils.genCert(utils.getRoot('data/'))
 
   moduleMaster.addModules(webserv)

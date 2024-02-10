@@ -1,0 +1,11 @@
+<h4>This is a very simple example module!</h4>
+<button id="testButton" onclick="testFunc()">test!</button>
+<script>
+  function getel(el) {return document.getElementById(el)}
+
+  function testFunc() {
+    window.sendRaw('test1', {
+      data: 'test!'
+    })
+  }
+</script>

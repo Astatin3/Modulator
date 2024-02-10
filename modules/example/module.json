@@ -1,0 +1,20 @@
+{
+  "name": "example",
+  "creators": ["ASTATIN3"],
+  "version": "1.0",
+  "entrypoint": "modules/example/main.py",
+  "tabs": [
+      {
+          "name": "example",
+          "defaultPage": "example",
+          "pages": [
+                {
+                    "type": "page",
+                    "name": "example",
+                    "requiredPermGroup": "",
+                    "location": "modules/example/example.html"
+                }
+          ]
+      }
+  ]
+}

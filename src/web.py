@@ -23,23 +23,11 @@ class webtab():
     self.defaultPage = ''
     self.html = ''
 
-  def recursiveAdder(self, objs):
+  def compileHtml(self, permGroups):
     html = ''
-    for obj in objs:
-      if isinstance(obj, webpagefolder):
-        html += '<details><summary>' +\
-        obj.name +\
-        '</summary><ul>\n' +\
-        self.recursiveAdder(obj.pages) +\
-        '</ul></details>\n'
-      else:
-        html += f'<li onclick=\'window.location="/{self.name}/{obj.name}"\'>' +\
-        obj.name +\
-        '</li>\n'
+    for page in self.pages:
+      html += page.compileHtml(self.name, permGroups)
     return html
-
-  def addHtml(self):
-    self.html = self.recursiveAdder(self.pages)
 
   def addPage(self, page):
     self.pages.append(page)
@@ -48,11 +36,28 @@ class webpagefolder():
   def __init__(self):
     self.name = None
     self.pages = []
+  
+  def compileHtml(self, tabname, permGroups):
+    html = '<details><summary>' + self.name + '</summary><ul>'
+    for page in self.pages:
+      html += page.compileHtml(tabname, permGroups)
+    html += '</ul></details>'
+    return html
 
 class webpage():
   def __init__(self):
     self.name = None
+    self.requiredPermGroup = ''
     self.location = None
+  
+  def compileHtml(self, tabname, permGroups):
+    html = '<li'
+    if self.requiredPermGroup == '' or (self.requiredPermGroup in permGroups):
+      html += f' onclick=\'window.location="/{tabname}/{self.name}"\'>' +\
+        self.name
+    else:
+      html += f'><del>{self.name}</del>'
+    return html + '</li>'
 
 @app.route('/')
 def index():
@@ -74,16 +79,16 @@ def loginPage():
     .replace('<!--Place title here!!!-->', app.webserv.title)
     .replace('<!--Place defaultPage here!!!-->', '/login'))
 
-def recursivePageLocationFinder(pagename, objs):
+def recursivePageFinder(pagename, objs):
   returnVal = None
   for obj in objs:
     if isinstance(obj, webpagefolder):
-      tmp = recursivePageLocationFinder(pagename, obj.pages)
+      tmp = recursivePageFinder(pagename, obj.pages)
       if tmp != None:
         returnVal = tmp
     else:
       if obj.name == pagename:
-        returnVal = obj.location
+        returnVal = obj
   return returnVal
 
 @app.route('/<tabname>/<pagename>')
@@ -96,16 +101,23 @@ def page(tabname, pagename):
   try:
   
     tab = utils.getatribinarr(app.webserv.webtabs, 'name', tabname)
-    pageloc = recursivePageLocationFinder(pagename, tab.pages)
+    page = recursivePageFinder(pagename, tab.pages)
+
+      # print(page.requiredPermGroup)
+
+    isValid, permGroups = app.webserv.authServer.validPermGroup(page.requiredPermGroup, request)
+
+    if not isValid:
+      return redirect(f'/{tab.name}/{tab.defaultPage}', code=302)
 
     return make_response(open(utils.getRoot('html/nav.html'), 'r').read()
-      .replace('<!--Place body here!!!-->', open(utils.getRoot(pageloc), 'r').read())
+      .replace('<!--Place body here!!!-->', open(utils.getRoot(page.location), 'r').read())
       .replace('<!--Place tabs here!!!-->', app.webserv.tabHtml)
-      .replace('<!--Place pages here!!!-->', tab.html)
+      .replace('<!--Place pages here!!!-->', tab.compileHtml(permGroups))
       .replace('<!--Place title here!!!-->', app.webserv.title)
       .replace('<!--Place defaultPage here!!!-->', f'/{app.webserv.defaultTab}/{app.webserv.defaultPage}'))
   except:
-    return redirect("/login", code=302)
+    return redirect("/", code=302)
 
 @app.route('/src/<file>')
 def src(file):
@@ -138,7 +150,7 @@ class webserv():
 
     if self.secure:
       dataroot = utils.getRoot("data/")
-      sslcontext = (f'{dataroot}selfsign.crt', f'{dataroot}selfsign.key')
+      sslcontext = (f'{dataroot}ssl.crt', f'{dataroot}ssl.key')
     else:
       sslcontext = None
 
@@ -146,14 +158,11 @@ class webserv():
       return f'<a href="{path}" role="button" class="outline topnav-button text-white">{name}</a>'
 
     for tab in self.webtabs:
-      self.tabHtml += tabHtml(f'/{tab.name}/{tab.defaultPage}', tab.name)
       if tab.name == self.defaultTab:
+        self.tabHtml = tabHtml(f'/{tab.name}/{tab.defaultPage}', tab.name) + self.tabHtml
         self.defaultPage = tab.defaultPage
-
-    def testfunc1(ac, data):
-      print(ac)
-      print(data)
-
+      else:
+        self.tabHtml += tabHtml(f'/{tab.name}/{tab.defaultPage}', tab.name)
 
     app.webserv = self
     self.app = app

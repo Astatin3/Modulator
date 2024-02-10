@@ -42,3 +42,5 @@ window.addListener('popupError', (data)=>{
 window.addListener('popupColor', (data)=>{
   window.utils.addPopup(data.data.color, data.data.isDark, data.data.title, data.data.msg)
 })
+
+window.main()

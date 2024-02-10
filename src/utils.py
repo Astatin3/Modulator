@@ -99,10 +99,10 @@ def genDefaultAccounts():
     ], sort_keys=True, indent=2)
 
 def genKey(path):
-  subprocess.run(['openssl', 'genrsa', '-out', f'{path}selfsign.key', '2048'])
+  subprocess.run(['openssl', 'genrsa', '-out', f'{path}ssl.key', '2048'])
 
 def genCert(path):
-  writeFile(f'{path}/selfsign.cnf', 
+  writeFile(f'{path}/ssl.cnf', 
 """[req]
 default_bits = 2048
 prompt = no
@@ -117,8 +117,8 @@ OU = www.ca.local
 CN = Self-Signed Root CA
 """)
 
-  subprocess.run(['openssl', 'req', '-new', '-key', f'{path}selfsign.key', '-out', f'{path}selfsign.csr', '-config', f'{path}selfsign.cnf'])
-  subprocess.run(['openssl', 'x509', '-req', '-days', '36500', '-in', f'{path}selfsign.csr', '-signkey', f'{path}selfsign.key', '-out', f'{path}selfsign.crt'])
+  subprocess.run(['openssl', 'req', '-new', '-key', f'{path}ssl.key', '-out', f'{path}ssl.csr', '-config', f'{path}ssl.cnf'])
+  subprocess.run(['openssl', 'x509', '-req', '-days', '36500', '-in', f'{path}ssl.csr', '-signkey', f'{path}ssl.key', '-out', f'{path}ssl.crt'])
 
-  delFile(f'{path}selfsign.cnf')
-  delFile(f'{path}selfsign.csr')
+  delFile(f'{path}ssl.cnf')
+  delFile(f'{path}ssl.csr')

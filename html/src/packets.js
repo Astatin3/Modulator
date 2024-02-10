@@ -14,6 +14,7 @@ function getErrorDesc(error){
       utils.setCookie('session', '')
       return 'Some part of the login request is invalid, please try again'
     case 'prelogin':
+      window.location.pathname = '/'
       return 'You are already logged in'
   }
   return error
@@ -32,6 +33,8 @@ function processData(data){
         utils.iconauth()
       }
       break
+    case 'redir':
+      window.location.pathname = data.location
     case 'data':
       console.log(data.data)
       break

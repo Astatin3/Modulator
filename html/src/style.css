@@ -56,6 +56,21 @@ body {
     font-family: var(--font);
 }
 
+.half-left {
+    position: relative;
+    display: inline-block;
+    width: 45%;
+    margin-right: calc(4%);
+}
+
+.half-right {
+    position: relative;
+    display: inline-block;
+    width: 44%;
+    margin-left: 4%;
+}
+
+
 .navbar {
     position: fixed;
     top:0;
@@ -202,7 +217,7 @@ li::marker {
 
     width: var(--popupBoxWidth);
     height: calc(100% - var(--topnavheight) - 10px);
-    pointer-events:none;
+    pointer-events: none;
     bottom: 0;
     right: 20px;
     overflow: auto;
@@ -225,7 +240,7 @@ li::marker {
     padding: 0;
     background-color: inherit;
 
-    pointer-events:all;
+    pointer-events: all;
 
     left: 0;
     margin: 0;
@@ -254,9 +269,10 @@ li::marker {
     opacity: 1;
 }
 
-.popupBox article a {
+dialog article a {
     cursor: pointer;
 }
+
 
 .popupBox article p {
     font-size: 15px;

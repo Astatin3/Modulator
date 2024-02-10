@@ -11,27 +11,30 @@
                 {
                     "type": "page",
                     "name": "dashboard",
+                    "requiredPermGroup": "",
                     "location": "modules/main/Dashboard.html"
                 },
                 {
                     "type": "folder",
-                    "name": "folder 1",
+                    "name": "Settings",
                     "pages": [
                         {
                             "type": "page",
-                            "name": "dashboardcopy",
-                            "location": "modules/main/Dashboard-copy.html"
+                            "name": "User",
+                            "requiredPermGroup": "",
+                            "location": "modules/main/userSettings.html"
                         },
                         {
-                            "type": "folder",
-                            "name": "folder 2",
-                            "pages": [
-                                {
-                                    "type": "page",
-                                    "name": "dashboardcopy",
-                                    "location": "modules/main/Dashboard-copy.html"
-                                }
-                            ]
+                            "type": "page",
+                            "name": "Program",
+                            "requiredPermGroup": "Admin",
+                            "location": "modules/main/programSettings.html"
+                        },
+                        {
+                            "type": "page",
+                            "name": "Admin",
+                            "requiredPermGroup": "Admin",
+                            "location": "modules/main/adminSettings.html"
                         }
                     ]
                 }
