@@ -26,14 +26,8 @@
                         },
                         {
                             "type": "page",
-                            "name": "Program",
-                            "requiredPermGroup": "Admin",
-                            "location": "modules/main/programSettings.html"
-                        },
-                        {
-                            "type": "page",
                             "name": "Admin",
-                            "requiredPermGroup": "Admin",
+                            "requiredPermGroup": "Admins",
                             "location": "modules/main/adminSettings.html"
                         }
                     ]

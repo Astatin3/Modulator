@@ -97,8 +97,6 @@ class moduleMaster():
     # for tab in webserv.webtabs:
     #   tab.compileHtml('User')
 
-
-
   def initModules(self, webserv):
     self.webserv = webserv
     self.app = webserv.app
@@ -114,9 +112,79 @@ class moduleMaster():
     for module in self.modules:
       module.run()
 
-  def runModules(self):
-    for module in self.modules:
-      module.run()
+
+
+
+  def reloadUsers(self):
+    self.authServer.reloadUsers()
+
+  def editUser(self, user, varname, value):
+    path = utils.getRoot('data/')+'creds.json'
+    logins = json.loads(utils.readFile(path))
+    for userdata in logins:
+      if userdata['username'] == user.username:
+        userdata[varname] = value
+    
+    utils.writeFile(path, json.dumps(logins, sort_keys=True, indent=2))
+  
+  def setUserPassword(self, user, hash):
+    for ac in self.authServer.clients:
+      if ac.user == user:
+        self.unauth(ac)
+    self.editUser(user, 'sha256passwordhash', hash)
+    self.editUser(user, 'passwordUpdated', utils.getUnixTime())
+    self.authServer.reloadUsers()
+
+  def setUserGroups(self, user, groups):
+    for ac in self.authServer.clients:
+      if ac.user == user:
+        self.unauth(ac)
+    self.editUser(user, 'permGroups', groups)
+    self.authServer.reloadUsers()
+
+  def addUser(self, user, groups, hash):
+    path = utils.getRoot('data/')+'creds.json'
+    time = utils.getUnixTime()
+    logins = json.loads(utils.readFile(path))
+    logins.append({
+      'username': user,
+      'permGroups': groups,
+      'created': time,
+      'id': utils.randID(16),
+      'passwordUpdated': time,
+      'sha256passwordhash': hash
+    })
+    utils.writeFile(path, json.dumps(logins, sort_keys=True, indent=2))
+    self.authServer.reloadUsers()
+
+  def deleteUser(self, user):
+    path = utils.getRoot('data/')+'creds.json'
+    time = utils.getUnixTime()
+    logins = json.loads(utils.readFile(path))
+    for login in logins:
+      if login['id'] == user.id:
+        logins.remove(login)
+    utils.writeFile(path, json.dumps(logins, sort_keys=True, indent=2))
+    self.authServer.reloadUsers()
+
+  def userInGroup(self, ac, group):
+    if not self.authServer.validAc(ac):
+      return False
+    if (group != "") and not (group in ac.user.permGroups):
+      return  False
+    return True
+  
+
+  
+  def getUserByName(self, name):
+    returnArr = []
+    for user in self.authServer.users:
+      if user.username == name:
+        returnArr.append(user)
+    return returnArr
+
+  def getUserById(self, id):
+    return utils.getatribinarr(self.authServer.users, 'id', id)
 
 
 
@@ -173,6 +241,9 @@ class moduleMaster():
 
 
   def unauth(self, ac):
+    ac.send('redir', {
+      "location": "/"
+    })
     self.authServer.unauth(ac)
 
 

@@ -14,29 +14,13 @@
 </section>
 
 <script>
-//let socket = io()
-usernamebox = document.getElementById('usernamebox')
-passwordbox = document.getElementById('passwordbox')
-
 function submit(){
+  const usernamebox = utils.getel('usernamebox')
+  const passwordbox = utils.getel('passwordbox')
+
   authLogin(usernamebox.value, passwordbox.value)
 }
 
-
-// function submit() {
-//   time = (new Date().getTime())
-
-//   hashpacket = usernamebox.value+sha256(passwordbox.value).toUpperCase()+time
-
-//   packet = {
-//     data: sha256(hashpacket),
-//     time: time
-//   }
-//   socket.emit('authreq', JSON.stringify(packet))
-//   //alert(sha256(passwordbox.value))
-//   //passwordbox.value = sha256(passwordbox.value)
-// }
-
-
+window.main = ()=>{}
 
 </script>

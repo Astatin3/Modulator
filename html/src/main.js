@@ -7,21 +7,20 @@ const hostname = window.location.href.split('/')[2]
 
 //import * as crypto from "/src/crypto-js.min.js"
 
-let rawClient = new packets.rawClient('/listen')
-let client = new auth.authClient(rawClient)
+let client = new packets.rawClient('/listen')
+let authClient = new auth.authClient(client)
 
 window.utils = utils
 window.packets = packets
 window.auth = auth
 window.jsonpack = jsonpack
 
-window.rawClient = rawClient
-window.authClient = client
+window.client = client
+window.authClient = authClient
 
-window.authLogin = client.login
-window.sendAuth = client.send
-window.sendRaw = rawClient.send
-window.addListener = rawClient.addRawTypeListener
+window.authLogin = authClient.login
+window.send = client.send
+window.addListener = client.addRawTypeListener
 
 window.addListener('popupInfo', (data)=>{
   window.utils.popupInfo(data.data.title, data.data.msg)

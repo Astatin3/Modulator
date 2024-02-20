@@ -52,7 +52,7 @@ class webpage():
   
   def compileHtml(self, tabname, permGroups):
     html = '<li'
-    if self.requiredPermGroup == '' or (self.requiredPermGroup in permGroups):
+    if (self.requiredPermGroup == '') or (self.requiredPermGroup in permGroups):
       html += f' onclick=\'window.location="/{tabname}/{self.name}"\'>' +\
         self.name
     else:

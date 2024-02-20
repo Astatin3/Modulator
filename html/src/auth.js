@@ -5,6 +5,11 @@ let c = null
 
 export function authClient(rawClient) {
   c = this
+  this.username = null
+  this.permGroups = null
+  this.accountCreated = null
+  this.passwordUpdated = null
+  this.id = null
   this.rawClient = rawClient
 
   this.login = (username, password)=>{
@@ -19,10 +24,6 @@ export function authClient(rawClient) {
       data: key,
       salt: salt
     })
-  }
-
-  this.send = (data)=>{
-    
   }
 
   this.clidata = (data)=>{
@@ -45,6 +46,13 @@ export function authClient(rawClient) {
   }
 
   this.reauth = (data)=>{
+
+    this.username = data.data.username
+    this.id = data.data.id
+    this.permGroups = data.data.permGroups
+    this.accountCreated = data.data.created
+    this.passwordUpdated = data.data.passwordUpdated
+
     if(window.location.pathname == "/login"){
       utils.popupSuccess('Connection', 'Successfully logged in!')
     }

@@ -11,21 +11,24 @@
     --background-0: #212529;
     --background-1: #404040;
 
+    --nav-color: rgba(0,0,0,0.3);
+
     --text-0: #242424;
     --text-1: #d3d3d3;
 
     --text-black: #242424;
-    --text-white: #d3d3d3;
+    --text-white: var(--pico-primary-inverse);
 
     --success-1:#059100;
     --warning-1:#ffdc3e;
     --error-1: #b60f0f;
 
     --font: "UbuntuMono";
+    --pico-font-family: UbuntuMono, regular;
 }
 
 * { 
-    font-family: var(--font);
+    font-family: var(--font) !important;
 }
 
 body {
@@ -44,17 +47,18 @@ body {
     width: calc(100% - var(--sidenavwidth));
     height: calc(100% - var(--topnavheight));
     padding: 5px;
+    overflow: scroll;
 }
 
-.text-white {
-    color: var(--text-white) !important;
+.text-invert {
+    color: var(--pico-primary-inverse) !important;
     font-family: var(--font);
 }
 
-.text-black {
+/* .text-black {
     color: var(--text-black) !important;
     font-family: var(--font);
-}
+} */
 
 .half-left {
     position: relative;
@@ -80,7 +84,7 @@ body {
     padding:5px;
     padding-left: calc(var(--sidenavwidth) + 10px);
     z-index: 10;
-    background-color: var(--background-0);
+    background-color: var(--nav-color);
 }
 
 .navbar ul {
@@ -115,7 +119,7 @@ body {
     height:100%;
     resize: left;
     z-index: 20;
-    background-color: var(--background-0);
+    background-color: var(--nav-color);
 }
 
 .navpanel details {

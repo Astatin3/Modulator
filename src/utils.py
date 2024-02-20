@@ -79,6 +79,8 @@ def genDefaultAccounts():
   print(f'Password: {adminPassword}')
   print('#################################################')
 
+  time = getUnixTime()
+
   return json.dumps(
     [
       {
@@ -86,6 +88,9 @@ def genDefaultAccounts():
         'permGroups': [
           'Users'
         ],
+        'id': randID(16),
+        'created': time,
+        'passwordUpdated': time,
         'sha256passwordhash': hash(userPassword)
       },
       {
@@ -94,6 +99,9 @@ def genDefaultAccounts():
           'Users',
           'Admins'
         ],
+        'id': randID(16),
+        'created': time,
+        'passwordUpdated': time,
         'sha256passwordhash': hash(adminPassword)
       }
     ], sort_keys=True, indent=2)

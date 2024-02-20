@@ -1,4 +1,4 @@
-export const getEl = (id)=>{return document.getElementById(id)}
+export const getel = (id)=>{return document.getElementById(id)}
 
 export const setCookie = (name, value, hours = 1, path = '/') => {
   const expires = new Date(Date.now() + hours * 6e4).toUTCString()
@@ -66,13 +66,22 @@ export function iconauth() {
 
 // }
 
-export function modal(elem, identifier, bgcolor, header, textColor, title, innerHTML) {
+export function getatribinarr(arr, atribname, value){
+  for(let i=0;i<arr.length;i++){
+    if(arr[i][atribname] == value){
+      return arr[i]
+    }
+  }
+  return null
+}
+
+export function modal(elem, bgcolor, header, textColor, title, innerHTML) {
   elem.innerHTML += `
   <dialog class="example ${textColor}" open>
     <article style="background-color:${bgcolor};">
       <header style="background-color:${header};">
-        <p class='noselect' style='font-size:10px;opacity:0.75'>${formatTime(getUnixTime())}</p>
-        <a class="close ${textColor}" onclick="${identifier}.removeChild(this.parentElement.parentElement.parentElement)"></a>
+        <p class='noselect ${textColor}' style='font-size:10px;opacity:0.75'>${formatTime(getUnixTime())}</p>
+        <a class="close ${textColor}" onclick="this.parentElement.parentElement.parentElement.remove()"></a>
         ${title}
       </header>
       ${innerHTML}
@@ -87,12 +96,12 @@ export function addPopup(bgcolor, isDark, title, content) {
   let textColor
   if(isDark){
     header = 'rgba(255,255,255,0.05)'
-    textColor = 'text-white'
+    textColor = "text-invert"
   }else{
     header = 'rgba(0,0,0,0.2)'
-    textColor = 'text-black'
+    textColor = ""
   }
-  modal(elem, "document.getElementById('popupBox')", bgcolor, header, textColor, title, `<p class='${textColor}'>${content}</p>`)
+  modal(elem, bgcolor, header, textColor, title, `<p class='${textColor}'>${content}</p>`)
 
 }
 
@@ -118,14 +127,14 @@ export function confirmBox(bgcolor, isDark, title, yesFunc, noFunc) {
   let textColor
   if(isDark){
     header = 'rgba(255,255,255,0.05)'
-    textColor = 'text-white'
+    textColor = "text-invert"
   }else{
     header = 'rgba(0,0,0,0.2)'
-    textColor = 'text-black'
+    textColor = ""
   }
-  modal(elem, 'document.body', bgcolor,  header, textColor, title, `
-  <button class="outline half-left" onclick="document.body.removeChild(this.parentElement.parentElement);${yesFunc}">Yes</button>
-  <button class="half-right" onclick="document.body.removeChild(this.parentElement.parentElement);${noFunc}">No</button>`)
+  modal(elem, bgcolor,  header, textColor, title, `
+  <button class="outline half-left" onclick="${yesFunc};document.body.removeChild(this.parentElement.parentElement)">Yes</button>
+  <button class="half-right" onclick="${noFunc};document.body.removeChild(this.parentElement.parentElement)">No</button>`)
 }
 
 export function getUnixTime() {

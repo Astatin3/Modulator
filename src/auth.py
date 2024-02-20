@@ -12,7 +12,10 @@ class authUser:
   def __init__(self):
     self.username = None
     self.permGroups = []
+    self.id = None
     self.sha256passwordhash = None
+    self.passwordUpdated = None
+    self.created = None
 
 class authClient:
   def __init__(self):
@@ -21,7 +24,7 @@ class authClient:
     self.currentPage = "/login"
     self.user = None
 
-    self.timeout = utils.getUnixTime() + (60 * 60 * 1000)
+    self.timeout = utils.getUnixTime() + (6 * 60 * 60 * 1000)
     self.loginTime = utils.getUnixTime()
     self.lastReauth = utils.getUnixTime()
 
@@ -58,7 +61,11 @@ class authServer:
     isValid = False
     validAcc = None
     for acc in self.users:
-      hash = utils.hash(str(acc.username)+str(acc.sha256passwordhash)+str(data['data']['salt']))
+      hash = utils.hash( 
+                        str(acc.username)+
+                        str(acc.sha256passwordhash)+
+                        str(data['data']['salt']))
+
       if hash == str(data['data']['data']):
         isValid = True
         validAcc = acc
@@ -115,7 +122,10 @@ class authServer:
 
     ac.send('reauth', {
       'username': ac.username,
+      'id': ac.user.id,
       'permGroups': ac.user.permGroups,
+      'created': ac.user.created,
+      'passwordUpdated': ac.user.passwordUpdated,
       'timeout': ac.timeout
     })
 
@@ -174,6 +184,9 @@ class authServer:
     for acc in data:
       user = authUser()
       user.username = acc['username']
+      user.id = acc['id']
       user.sha256passwordhash = acc['sha256passwordhash']
       user.permGroups = acc['permGroups']
+      user.created = acc['created']
+      user.passwordUpdated = acc['passwordUpdated']
       self.users.append(user)
