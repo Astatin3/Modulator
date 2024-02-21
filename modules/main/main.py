@@ -79,7 +79,7 @@ def changePassword(ac, data):
   correctName = ac.user.id == data['data']['id']
   
   
-  if isAdmin and not 'old' in data['data']:
+  if isAdmin and correctName and not 'old' in data['data']:
     mm.sendPopupError(ac.rawClient, "Error", "You are not authorised")
     return
   

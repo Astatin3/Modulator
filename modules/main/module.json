@@ -16,6 +16,24 @@
                 },
                 {
                     "type": "folder",
+                    "name": "Docs",
+                    "pages": [
+                        {
+                            "type": "page",
+                            "name": "Home",
+                            "requiredPermGroup": "",
+                            "location": "modules/main/docs-home.html"
+                        },
+                        {
+                            "type": "page",
+                            "name": "Modules",
+                            "requiredPermGroup": "Admins",
+                            "location": "modules/main/docs-writing-modules.html"
+                        }
+                    ]
+                },
+                {
+                    "type": "folder",
                     "name": "Settings",
                     "pages": [
                         {
