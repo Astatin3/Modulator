@@ -130,7 +130,7 @@ def err404(err):
 
 class webserv():
   def __init__(self):
-    self.title = 'Modulator'
+    self.title = 'Polyboard'
     self.port = 443
     self.host = '0.0.0.0'
     self.verbose = False

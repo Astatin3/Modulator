@@ -2,7 +2,7 @@
  
 ### A very dynamic dashboard, with many features
 
-Modulator is basically just a fancy dashboard template, but with a very extensible module system, and security features!
+Polyboard is basically just a fancy dashboard template, but with a very extensible module system, and security features!
 
 [Read the wiki!](https://github.com/Astatin3/Modulator/wiki)
 
