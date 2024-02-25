@@ -1,4 +1,4 @@
-# Modulator
+# Polyboard
  
 ### A very dynamic dashboard, with many features
 
