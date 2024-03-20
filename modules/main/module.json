@@ -1,7 +1,7 @@
 {
   "name": "main",
   "creators": ["ASTATIN3"],
-  "version": "1.0",
+  "version": "1.1",
   "entrypoint": "modules/main/main.py",
   "tabs": [
       {
@@ -27,7 +27,7 @@
                         {
                             "type": "page",
                             "name": "Modules",
-                            "requiredPermGroup": "Admins",
+                            "requiredPermGroup": "",
                             "location": "modules/main/docs-writing-modules.html"
                         }
                     ]
